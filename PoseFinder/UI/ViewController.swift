@@ -25,7 +25,8 @@ class ViewController: UIViewController {
     private var algorithm: Algorithm = .multiple
 
     /// The set of parameters passed to the pose builder when detecting poses.
-    private var poseBuilderConfiguration = PoseBuilderConfiguration()
+    private let jointConfidenceThreshold: Double = 0.1
+    private let poseConfidenceThreshold: Double = 0.5
 
     private var popOverPresentationManager: PopOverPresentationManager?
 

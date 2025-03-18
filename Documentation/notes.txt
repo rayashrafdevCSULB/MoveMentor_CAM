@@ -1,0 +1,7 @@
+step2 didnt work, there's no line with multiple poses in the poseBuilder file
+step 3 didnt work, no 
+deleted files: 
+
+
+dont: poseBuilderMultiple
+        
