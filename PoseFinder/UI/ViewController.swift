@@ -1,9 +1,9 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The implementation of the application's view controller, responsible for coordinating
- the user interface, video feed, and PoseNet model.
+ ViewController.swift
+ 
+ This file implements the main view controller responsible for coordinating the user interface,
+ handling the video feed, and processing PoseNet model predictions.
+ It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
 import AVFoundation
@@ -11,28 +11,27 @@ import UIKit
 import VideoToolbox
 
 class ViewController: UIViewController {
-    /// The view the controller uses to visualize the detected poses.
+    /// View used to visualize detected poses.
     @IBOutlet private var previewImageView: PoseImageView!
 
     private let videoCapture = VideoCapture()
-
     private var poseNet: PoseNet!
 
-    /// The frame the PoseNet model is currently making pose predictions from.
+    /// The current frame being analyzed by PoseNet.
     private var currentFrame: CGImage?
 
-    /// The algorithm the controller uses to extract poses from the current frame.
+    /// Algorithm used for extracting poses (single or multiple person detection).
     private var algorithm: Algorithm = .multiple
 
-    /// The set of parameters passed to the pose builder when detecting poses.
+    /// Configuration settings for the pose builder.
     private var poseBuilderConfiguration = PoseBuilderConfiguration()
 
     private var popOverPresentationManager: PopOverPresentationManager?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // For convenience, the idle timer is disabled to prevent the screen from locking.
+        
+        // Prevent screen from locking while the app is running.
         UIApplication.shared.isIdleTimerDisabled = true
 
         do {
@@ -45,15 +44,14 @@ class ViewController: UIViewController {
         setupAndBeginCapturingVideoFrames()
     }
 
+    /// Sets up the camera and starts capturing video frames.
     private func setupAndBeginCapturingVideoFrames() {
         videoCapture.setUpAVCapture { error in
             if let error = error {
                 print("Failed to setup camera with error \(error)")
                 return
             }
-
             self.videoCapture.delegate = self
-
             self.videoCapture.startCapturing()
         }
     }
@@ -64,27 +62,9 @@ class ViewController: UIViewController {
         }
     }
 
-    override func viewWillTransition(to size: CGSize,
-                                     with coordinator: UIViewControllerTransitionCoordinator) {
-        // Reinitilize the camera to update its output stream with the new orientation.
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        // Reinitialize the camera when the device orientation changes.
         setupAndBeginCapturingVideoFrames()
-    }
-
-    @IBAction func onCameraButtonTapped(_ sender: Any) {
-        videoCapture.flipCamera { error in
-            if let error = error {
-                print("Failed to flip camera with error \(error)")
-            }
-        }
-    }
-
-    @IBAction func onAlgorithmSegmentValueChanged(_ sender: UISegmentedControl) {
-        guard let selectedAlgorithm = Algorithm(
-            rawValue: sender.selectedSegmentIndex) else {
-                return
-        }
-
-        algorithm = selectedAlgorithm
     }
 }
 
@@ -92,20 +72,16 @@ class ViewController: UIViewController {
 
 extension ViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let uiNavigationController = segue.destination as? UINavigationController else {
+        guard let uiNavigationController = segue.destination as? UINavigationController,
+              let configurationViewController = uiNavigationController.viewControllers.first as? ConfigurationViewController else {
             return
-        }
-        guard let configurationViewController = uiNavigationController.viewControllers.first
-            as? ConfigurationViewController else {
-                    return
         }
 
         configurationViewController.configuration = poseBuilderConfiguration
         configurationViewController.algorithm = algorithm
         configurationViewController.delegate = self
 
-        popOverPresentationManager = PopOverPresentationManager(presenting: self,
-                                                                presented: uiNavigationController)
+        popOverPresentationManager = PopOverPresentationManager(presenting: self, presented: uiNavigationController)
         segue.destination.modalPresentationStyle = .custom
         segue.destination.transitioningDelegate = popOverPresentationManager
     }
@@ -114,13 +90,11 @@ extension ViewController {
 // MARK: - ConfigurationViewControllerDelegate
 
 extension ViewController: ConfigurationViewControllerDelegate {
-    func configurationViewController(_ viewController: ConfigurationViewController,
-                                     didUpdateConfiguration configuration: PoseBuilderConfiguration) {
+    func configurationViewController(_ viewController: ConfigurationViewController, didUpdateConfiguration configuration: PoseBuilderConfiguration) {
         poseBuilderConfiguration = configuration
     }
 
-    func configurationViewController(_ viewController: ConfigurationViewController,
-                                     didUpdateAlgorithm algorithm: Algorithm) {
+    func configurationViewController(_ viewController: ConfigurationViewController, didUpdateAlgorithm algorithm: Algorithm) {
         self.algorithm = algorithm
     }
 }
@@ -149,19 +123,15 @@ extension ViewController: PoseNetDelegate {
             // Release `currentFrame` when exiting this method.
             self.currentFrame = nil
         }
-
+        
         guard let currentFrame = currentFrame else {
             return
         }
-
-        let poseBuilder = PoseBuilder(output: predictions,
-                                      configuration: poseBuilderConfiguration,
-                                      inputImage: currentFrame)
-
-        let poses = algorithm == .single
-            ? [poseBuilder.pose]
-            : poseBuilder.poses
-
+        
+        let poseBuilder = PoseBuilder(output: predictions, configuration: poseBuilderConfiguration, inputImage: currentFrame)
+        
+        let poses = algorithm == .single ? [poseBuilder.pose] : poseBuilder.poses
+        
         previewImageView.show(poses: poses, on: currentFrame)
     }
 }

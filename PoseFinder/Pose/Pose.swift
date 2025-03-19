@@ -1,20 +1,26 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Implementation details of a structure used to describe a pose.
+ Pose.swift
+ 
+ This file defines the Pose structure, which represents a detected human pose.
+ It consists of individual joints and their relationships (edges) to form a skeletal structure.
+ The structure includes utility methods to access joint information and retrieve connections between joints.
 */
 
 import CoreGraphics
 
+/// Represents a detected human pose consisting of joints and edges.
 struct Pose {
-
-    /// A structure used to describe a parent-child relationship between two joints.
+    /// Defines a parent-child relationship between two joints.
     struct Edge {
         let index: Int
         let parent: Joint.Name
         let child: Joint.Name
 
+        /// Initializes an edge connecting two joints.
+        /// - Parameters:
+        ///   - parent: The parent joint.
+        ///   - child: The child joint.
+        ///   - index: The index corresponding to displacement maps.
         init(from parent: Joint.Name, to child: Joint.Name, index: Int) {
             self.index = index
             self.parent = parent
@@ -22,10 +28,8 @@ struct Pose {
         }
     }
 
-    /// An array of edges used to define the connections between the joints.
-    ///
-    /// The index relates to the index used to access the associated value within the displacement maps
-    /// output by the PoseNet model.
+    /// Defines the skeletal connections between joints.
+    /// These edges are used to connect joints when rendering the detected pose.
     static let edges = [
         Edge(from: .nose, to: .leftEye, index: 0),
         Edge(from: .leftEye, to: .leftEar, index: 1),
@@ -45,7 +49,7 @@ struct Pose {
         Edge(from: .rightKnee, to: .rightAnkle, index: 15)
     ]
 
-    /// The joints that make up a pose.
+    /// A dictionary of joints that make up a pose.
     private(set) var joints: [Joint.Name: Joint] = [
         .nose: Joint(name: .nose),
         .leftEye: Joint(name: .leftEye),
@@ -66,10 +70,10 @@ struct Pose {
         .rightAnkle: Joint(name: .rightAnkle)
     ]
 
-    /// The confidence score associated with this pose.
+    /// The confidence score of the pose estimation.
     var confidence: Double = 0.0
 
-    /// Accesses the joint with the specified name.
+    /// Accesses a joint by its name.
     subscript(jointName: Joint.Name) -> Joint {
         get {
             assert(joints[jointName] != nil)
@@ -80,23 +84,20 @@ struct Pose {
         }
     }
 
-    /// Returns all edges that link **from** or **to** the specified joint.
-    ///
-    /// - parameters:
-    ///     - jointName: Query joint name.
-    /// - returns: All edges that connect to or from `jointName`.
+    /// Retrieves all edges connected to a specified joint.
+    /// - Parameter jointName: The name of the joint to find edges for.
+    /// - Returns: A list of edges connected to the joint.
     static func edges(for jointName: Joint.Name) -> [Edge] {
         return Pose.edges.filter {
             $0.parent == jointName || $0.child == jointName
         }
     }
 
-    /// Returns the edge having the specified parent and child  joint names.
-    ///
-    /// - parameters:
-    ///     - parentJointName: Edge's parent joint name.
-    ///     - childJointName: Edge's child joint name.
-    /// - returns: All edges that connect to or from `jointName`.
+    /// Retrieves a specific edge based on parent and child joints.
+    /// - Parameters:
+    ///   - parentJointName: The parent joint of the edge.
+    ///   - childJointName: The child joint of the edge.
+    /// - Returns: The corresponding edge if found, otherwise nil.
     static func edge(from parentJointName: Joint.Name, to childJointName: Joint.Name) -> Edge? {
         return Pose.edges.first(where: { $0.parent == parentJointName && $0.child == childJointName })
     }

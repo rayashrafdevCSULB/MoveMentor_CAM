@@ -1,13 +1,16 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Implementation details of a structure used to describe a joint.
+ Joint.swift
+ 
+ This file defines the Joint class, which represents a single body joint detected by PoseNet.
+ Each joint has a name, position, confidence score, and validity flag.
+ The class also includes a mapping from output grid coordinates to the original image space.
 */
 
 import CoreGraphics
 
+/// Represents a detected body joint in PoseNet.
 class Joint {
+    /// Enum representing all possible body joints PoseNet can detect.
     enum Name: Int, CaseIterable {
         case nose
         case leftEye
@@ -28,31 +31,34 @@ class Joint {
         case rightAnkle
     }
 
-    /// The total number of joints available.
+    /// The total number of joints defined in the model.
     static var numberOfJoints: Int {
         return Name.allCases.count
     }
 
-    /// The name used to identify the joint.
+    /// The unique identifier for the joint.
     let name: Name
 
-    /// The position of the joint relative to the image.
-    ///
-    /// The position is initially relative to the model's input image size and then mapped to the original image
-    /// size after constructing the associated pose.
+    /// The position of the joint in image space.
+    /// Initially relative to the model’s input size and later mapped to the original image.
     var position: CGPoint
 
-    /// The joint's respective cell index into model's output grid.
+    /// The joint’s location in the PoseNet model’s output grid.
     var cell: PoseNetOutput.Cell
 
-    /// The confidence score associated with this joint.
-    ///
-    /// The joint confidence is obtained from the `heatmap` array output by the PoseNet model.
+    /// Confidence score indicating the model’s certainty of joint detection.
     var confidence: Double
 
-    /// A boolean value that indicates if the joint satisfies the joint threshold defined in the configuration.
+    /// Indicates whether the joint meets the confidence threshold.
     var isValid: Bool
 
+    /// Initializes a new joint with the provided properties.
+    /// - Parameters:
+    ///   - name: The joint’s name.
+    ///   - cell: The corresponding cell location in the output grid.
+    ///   - position: The joint’s position in image space.
+    ///   - confidence: The confidence score of the detection.
+    ///   - isValid: Whether the joint is valid based on confidence thresholds.
     init(name: Name,
          cell: PoseNetOutput.Cell = .zero,
          position: CGPoint = .zero,

@@ -1,7 +1,4 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
 An initializer that creates an instance of the video orientation based on the given
  device orientation.
 */
