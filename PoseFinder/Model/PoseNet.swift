@@ -1,67 +1,65 @@
 /*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Implementation details of a facade to interact with the PoseNet model, includes input
- preprocessing and calling the model's prediction function.
+ PoseNet.swift
+ 
+ This file contains the implementation of a facade for interacting with the PoseNet model.
+ The class handles input preprocessing, model inference, and delegates the output results.
+ PoseNet is a deep learning model used for real-time human pose estimation.
+ It predicts keypoints of the human body from an image using CoreML and Vision.
 */
 
 import CoreML
 import Vision
 
+/// Protocol for PoseNet delegate to handle predictions.
 protocol PoseNetDelegate: AnyObject {
+    /// Called when the PoseNet model generates predictions.
+    /// - Parameters:
+    ///   - poseNet: The instance of PoseNet performing the inference.
+    ///   - predictions: The output containing detected keypoints.
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput)
 }
 
 class PoseNet {
-    /// The delegate to receive the PoseNet model's outputs.
+    /// Delegate to receive the PoseNet model's output.
     weak var delegate: PoseNetDelegate?
 
-    /// The PoseNet model's input size.
-    ///
-    /// All PoseNet models available from the Model Gallery support the input sizes 257x257, 353x353, and 513x513.
-    /// Larger images typically offer higher accuracy but are more computationally expensive. The ideal size depends
-    /// on the context of use and target devices, typically discovered through trial and error.
+    /// The fixed input size of the PoseNet model.
+    /// PoseNet supports input sizes of 257x257, 353x353, and 513x513 pixels.
+    /// Larger sizes get better accuracy but require more computational resources.
     let modelInputSize = CGSize(width: 513, height: 513)
 
-    /// The PoseNet model's output stride.
-    ///
-    /// Valid strides are 16 and 8 and define the resolution of the grid output by the model. Smaller strides
-    /// result in higher-resolution grids with an expected increase in accuracy but require more computation. Larger
-    /// strides provide a more coarse grid and typically less accurate but are computationally cheaper in comparison.
-    ///
-    /// - Note: The output stride is dependent on the chosen model and specified in the metadata. Other variants of the
-    /// PoseNet models are available from the Model Gallery.
+    /// The output stride determines the granularity of the output keypoints.
+    /// Strides of 16 or 8 are valid, with smaller strides yielding more detailed results
+    /// but increasing computational cost.
     let outputStride = 16
 
-    /// The Core ML model that the PoseNet model uses to generate estimates for the poses.
-    ///
-    /// - Note: Other variants of the PoseNet model are available from the Model Gallery.
+    /// The Core ML model instance used for pose estimation.
     private let poseNetMLModel: MLModel
 
+    /// Initializes the PoseNet model with the default MobileNet variant.
+    /// - Throws: An error if the model fails to load.
     init() throws {
         poseNetMLModel = try PoseNetMobileNet075S16FP16(configuration: .init()).model
     }
 
-    /// Calls the `prediction` method of the PoseNet model and returns the outputs to the assigned
-    /// `delegate`.
-    ///
-    /// - parameters:
-    ///     - image: Image passed by the PoseNet model.
+    /// Performs pose estimation on the given image.
+    /// - Parameter image: The input CGImage to process.
     func predict(_ image: CGImage) {
         DispatchQueue.global(qos: .userInitiated).async {
-            // Wrap the image in an instance of PoseNetInput to have it resized
-            // before being passed to the PoseNet model.
+            // Wrap the image in a PoseNetInput object for preprocessing.
             let input = PoseNetInput(image: image, size: self.modelInputSize)
 
+            // Perform inference using the PoseNet Core ML model.
             guard let prediction = try? self.poseNetMLModel.prediction(from: input) else {
                 return
             }
 
+            // Process the model's output into a structured PoseNetOutput object.
             let poseNetOutput = PoseNetOutput(prediction: prediction,
                                               modelInputSize: self.modelInputSize,
                                               modelOutputStride: self.outputStride)
 
+            // Dispatch the result to the main thread for UI updates.
             DispatchQueue.main.async {
                 self.delegate?.poseNet(self, didPredict: poseNetOutput)
             }
