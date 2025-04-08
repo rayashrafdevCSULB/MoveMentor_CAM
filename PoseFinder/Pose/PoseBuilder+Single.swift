@@ -53,6 +53,7 @@ extension PoseBuilder {
 
         // Update joint properties.
         joint.cell = bestCell
+        joint.previousPosition = joint.position // ✅ store previous position
         joint.position = output.position(for: joint.name, at: joint.cell)
         joint.confidence = bestConfidence
         joint.isValid = joint.confidence >= configuration.jointConfidenceThreshold

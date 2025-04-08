@@ -35,6 +35,7 @@ class Joint {
     static var numberOfJoints: Int {
         return Name.allCases.count
     }
+    
 
     /// The unique identifier for the joint.
     let name: Name
@@ -42,6 +43,8 @@ class Joint {
     /// The position of the joint in image space.
     /// Initially relative to the model’s input size and later mapped to the original image.
     var position: CGPoint
+    
+    var previousPosition: CGPoint?
 
     /// The joint’s location in the PoseNet model’s output grid.
     var cell: PoseNetOutput.Cell

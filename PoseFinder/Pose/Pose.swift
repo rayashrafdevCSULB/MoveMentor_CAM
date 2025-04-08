@@ -101,4 +101,9 @@ struct Pose {
     static func edge(from parentJointName: Joint.Name, to childJointName: Joint.Name) -> Edge? {
         return Pose.edges.first(where: { $0.parent == parentJointName && $0.child == childJointName })
     }
+    // Group joints by body part
+        static let leftArm: [Joint.Name] = [.leftShoulder, .leftElbow, .leftWrist]
+        static let rightArm: [Joint.Name] = [.rightShoulder, .rightElbow, .rightWrist]
+        static let leftLeg: [Joint.Name] = [.leftHip, .leftKnee, .leftAnkle]
+        static let rightLeg: [Joint.Name] = [.rightHip, .rightKnee, .rightAnkle]
 }
