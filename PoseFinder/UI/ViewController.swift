@@ -1,6 +1,6 @@
 /*
  ViewController.swift
- 
+
  This file implements the main view controller responsible for coordinating the user interface,
  handling the video feed, and processing PoseNet model predictions.
  It manages camera input, runs pose detection, and updates the UI with detected poses.
@@ -28,9 +28,12 @@ class ViewController: UIViewController {
 
     private var popOverPresentationManager: PopOverPresentationManager?
 
+    /// Label used to display which body part is moving
+    private var movementLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Prevent screen from locking while the app is running.
         UIApplication.shared.isIdleTimerDisabled = true
 
@@ -42,6 +45,14 @@ class ViewController: UIViewController {
 
         poseNet.delegate = self
         setupAndBeginCapturingVideoFrames()
+
+        // Setup movement label
+        movementLabel = UILabel()
+        movementLabel.frame = CGRect(x: 20, y: 60, width: 300, height: 40)
+        movementLabel.textColor = .white
+        movementLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        movementLabel.text = ""
+        view.addSubview(movementLabel)
     }
 
     /// Sets up the camera and starts capturing video frames.
@@ -120,18 +131,39 @@ extension ViewController: VideoCaptureDelegate {
 extension ViewController: PoseNetDelegate {
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
         defer {
-            // Release `currentFrame` when exiting this method.
             self.currentFrame = nil
         }
-        
+
         guard let currentFrame = currentFrame else {
             return
         }
-        
-        let poseBuilder = PoseBuilder(output: predictions, configuration: poseBuilderConfiguration, inputImage: currentFrame)
-        
-        let poses = algorithm == .single ? [poseBuilder.pose] : poseBuilder.poses
-        
+
+        let poseBuilder = PoseBuilder(output: predictions,
+                                      configuration: poseBuilderConfiguration,
+                                      inputImage: currentFrame)
+
+        let poses = algorithm == .single
+            ? [poseBuilder.pose]
+            : poseBuilder.poses
+
+        // 🟢 Motion detection logic
+        if let pose = poses.first {
+            let motions: [(String, CGFloat)] = [
+                ("Left Arm", pose.movement(for: Pose.leftArm)),
+                ("Right Arm", pose.movement(for: Pose.rightArm)),
+                ("Left Leg", pose.movement(for: Pose.leftLeg)),
+                ("Right Leg", pose.movement(for: Pose.rightLeg))
+            ]
+
+            if let mostMoved = motions.max(by: { $0.1 < $1.1 }), mostMoved.1 > 10 {
+                movementLabel.text = "\(mostMoved.0) is moving"
+                previewImageView.highlightedBodyPart = mostMoved.0
+            } else {
+                movementLabel.text = ""
+                previewImageView.highlightedBodyPart = nil
+            }
+        }
+
         previewImageView.show(poses: poses, on: currentFrame)
     }
 }
