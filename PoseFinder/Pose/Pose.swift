@@ -116,4 +116,14 @@ struct Pose {
     static let rightArm: [Joint.Name] = [.rightShoulder, .rightElbow, .rightWrist]
     static let leftLeg: [Joint.Name] = [.leftHip, .leftKnee, .leftAnkle]
     static let rightLeg: [Joint.Name] = [.rightHip, .rightKnee, .rightAnkle]
+
+    static func jointGroup(for name: String) -> [Joint.Name] {
+        switch name {
+        case "Left Arm": return Pose.leftArm
+        case "Right Arm": return Pose.rightArm
+        case "Left Leg": return Pose.leftLeg
+        case "Right Leg": return Pose.rightLeg
+        default: return []
+        }
+}
 }

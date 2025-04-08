@@ -11,30 +11,20 @@ import UIKit
 import VideoToolbox
 
 class ViewController: UIViewController {
-    /// View used to visualize detected poses.
     @IBOutlet private var previewImageView: PoseImageView!
 
     private let videoCapture = VideoCapture()
     private var poseNet: PoseNet!
-
-    /// The current frame being analyzed by PoseNet.
     private var currentFrame: CGImage?
-
-    /// Algorithm used for extracting poses (single or multiple person detection).
     private var algorithm: Algorithm = .multiple
-
-    /// Configuration settings for the pose builder.
     private var poseBuilderConfiguration = PoseBuilderConfiguration()
-
     private var popOverPresentationManager: PopOverPresentationManager?
 
-    /// Label used to display which body part is moving
     private var movementLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Prevent screen from locking while the app is running.
         UIApplication.shared.isIdleTimerDisabled = true
 
         do {
@@ -46,7 +36,7 @@ class ViewController: UIViewController {
         poseNet.delegate = self
         setupAndBeginCapturingVideoFrames()
 
-        // Setup movement label
+        // Setup label
         movementLabel = UILabel()
         movementLabel.frame = CGRect(x: 20, y: 60, width: 300, height: 40)
         movementLabel.textColor = .white
@@ -55,7 +45,6 @@ class ViewController: UIViewController {
         view.addSubview(movementLabel)
     }
 
-    /// Sets up the camera and starts capturing video frames.
     private func setupAndBeginCapturingVideoFrames() {
         videoCapture.setUpAVCapture { error in
             if let error = error {
@@ -74,7 +63,6 @@ class ViewController: UIViewController {
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        // Reinitialize the camera when the device orientation changes.
         setupAndBeginCapturingVideoFrames()
     }
 }
@@ -114,9 +102,7 @@ extension ViewController: ConfigurationViewControllerDelegate {
 
 extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCaptureFrame capturedImage: CGImage?) {
-        guard currentFrame == nil else {
-            return
-        }
+        guard currentFrame == nil else { return }
         guard let image = capturedImage else {
             fatalError("Captured image is null")
         }
@@ -130,9 +116,7 @@ extension ViewController: VideoCaptureDelegate {
 
 extension ViewController: PoseNetDelegate {
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
-        defer {
-            self.currentFrame = nil
-        }
+        defer { self.currentFrame = nil }
 
         guard let currentFrame = currentFrame else {
             return
@@ -146,8 +130,16 @@ extension ViewController: PoseNetDelegate {
             ? [poseBuilder.pose]
             : poseBuilder.poses
 
-        // 🟢 Motion detection logic
         if let pose = poses.first {
+            // Ensure at least some joints are visible (valid)
+            let visibleJoints = pose.joints.values.filter { $0.isValid }
+            guard !visibleJoints.isEmpty else {
+                movementLabel.text = ""
+                previewImageView.highlightedBodyPart = nil
+                return
+            }
+
+            // Motion check
             let motions: [(String, CGFloat)] = [
                 ("Left Arm", pose.movement(for: Pose.leftArm)),
                 ("Right Arm", pose.movement(for: Pose.rightArm)),
@@ -155,13 +147,21 @@ extension ViewController: PoseNetDelegate {
                 ("Right Leg", pose.movement(for: Pose.rightLeg))
             ]
 
-            if let mostMoved = motions.max(by: { $0.1 < $1.1 }), mostMoved.1 > 10 {
-                movementLabel.text = "\(mostMoved.0) is moving"
-                previewImageView.highlightedBodyPart = mostMoved.0
-            } else {
+            // Only keep body parts with a decent number of visible joints
+            let bodyPartsWithValidJoints = motions.filter { part in
+                let jointGroup = Pose.jointGroup(for: part.0)
+                let visibleCount = jointGroup.filter { pose[$0].isValid }.count
+                return visibleCount >= 2
+            }
+
+            guard let mostMoved = bodyPartsWithValidJoints.max(by: { $0.1 < $1.1 }), mostMoved.1 > 5 else {
                 movementLabel.text = ""
                 previewImageView.highlightedBodyPart = nil
+                return
             }
+
+            movementLabel.text = "\(mostMoved.0) is moving"
+            previewImageView.highlightedBodyPart = mostMoved.0
         }
 
         previewImageView.show(poses: poses, on: currentFrame)
