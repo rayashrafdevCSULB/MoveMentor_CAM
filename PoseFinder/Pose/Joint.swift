@@ -44,7 +44,6 @@ class Joint {
     /// Initially relative to the model’s input size and later mapped to the original image.
     var position: CGPoint
     
-    var previousPosition: CGPoint?
 
     /// The joint’s location in the PoseNet model’s output grid.
     var cell: PoseNetOutput.Cell
@@ -55,7 +54,12 @@ class Joint {
     /// Indicates whether the joint meets the confidence threshold.
     var isValid: Bool
 
-    /// Initializes a new joint with the provided properties.
+    var previousPosition: CGPoint?
+    
+    func motionMagnitude() -> CGFloat {
+        guard let prev = previousPosition else { return 0 }
+        return hypot(position.x - prev.x, position.y - prev.y)
+}    /// Initializes a new joint with the provided properties.
     /// - Parameters:
     ///   - name: The joint’s name.
     ///   - cell: The corresponding cell location in the output grid.
