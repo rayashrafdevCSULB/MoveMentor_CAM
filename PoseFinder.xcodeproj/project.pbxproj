@@ -9,18 +9,12 @@
 /* Begin PBXBuildFile section */
 		0D4BB83F249769C800076D64 /* PoseNetMobileNet075S16FP16.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 0D4BB83E249769C800076D64 /* PoseNetMobileNet075S16FP16.mlmodel */; };
 		0DCEF2C7241666CA00ECEC99 /* PoseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCEF2C6241666CA00ECEC99 /* PoseBuilder.swift */; };
-		0DCEF2C92416701D00ECEC99 /* PoseBuilder+Single.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCEF2C82416701D00ECEC99 /* PoseBuilder+Single.swift */; };
-		0DCEF2CB2416709B00ECEC99 /* PoseBuilder+Multiple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCEF2CA2416709B00ECEC99 /* PoseBuilder+Multiple.swift */; };
-		0DCEF2CE241676C000ECEC99 /* PoseBuilderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DCEF2CD241676C000ECEC99 /* PoseBuilderConfiguration.swift */; };
 		4A0FC5BC23190AD6004886B9 /* CGPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0FC5BB23190AD6004886B9 /* CGPoint+Extension.swift */; };
-		4A2D05CE23BF9A2C00D002ED /* ConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2D05CD23BF9A2C00D002ED /* ConfigurationViewController.swift */; };
-		4A2D05D023BF9BBF00D002ED /* PopOverModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2D05CF23BF9BBF00D002ED /* PopOverModalViewController.swift */; };
 		4A2D23B222BB70E400494C55 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2D23B122BB70E400494C55 /* AppDelegate.swift */; };
 		4A2D23B622BB70E400494C55 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2D23B522BB70E400494C55 /* ViewController.swift */; };
 		4A2D23B922BB70E400494C55 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A2D23B722BB70E400494C55 /* Main.storyboard */; };
 		4A2D23BB22BB70E500494C55 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A2D23BA22BB70E500494C55 /* Assets.xcassets */; };
 		4A2D23BE22BB70E500494C55 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A2D23BC22BB70E500494C55 /* LaunchScreen.storyboard */; };
-		4A6C8A8223E84D1D0080886A /* GradientOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6C8A8123E84D1D0080886A /* GradientOverlayView.swift */; };
 		4A97FA952350ABDE00255C7F /* Pose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A97FA942350ABDE00255C7F /* Pose.swift */; };
 		4AA5C4B822BB9CC200277977 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA5C4B722BB9CC200277977 /* VideoCapture.swift */; };
 		4AA5C4BA22BBBC2A00277977 /* PoseNet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA5C4B922BBBC2A00277977 /* PoseNet.swift */; };
@@ -33,15 +27,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0563E980FDE557646F54ED8A /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		0D4BB83E249769C800076D64 /* PoseNetMobileNet075S16FP16.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = PoseNetMobileNet075S16FP16.mlmodel; sourceTree = "<group>"; };
 		0DCEF2C6241666CA00ECEC99 /* PoseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseBuilder.swift; sourceTree = "<group>"; };
-		0DCEF2C82416701D00ECEC99 /* PoseBuilder+Single.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PoseBuilder+Single.swift"; sourceTree = "<group>"; };
-		0DCEF2CA2416709B00ECEC99 /* PoseBuilder+Multiple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PoseBuilder+Multiple.swift"; sourceTree = "<group>"; };
-		0DCEF2CD241676C000ECEC99 /* PoseBuilderConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseBuilderConfiguration.swift; sourceTree = "<group>"; };
 		4A0FC5BB23190AD6004886B9 /* CGPoint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extension.swift"; sourceTree = "<group>"; };
-		4A2D05CD23BF9A2C00D002ED /* ConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationViewController.swift; sourceTree = "<group>"; };
-		4A2D05CF23BF9BBF00D002ED /* PopOverModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopOverModalViewController.swift; sourceTree = "<group>"; };
 		4A2D23AE22BB70E400494C55 /* PoseFinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PoseFinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A2D23B122BB70E400494C55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4A2D23B522BB70E400494C55 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -49,7 +37,6 @@
 		4A2D23BA22BB70E500494C55 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4A2D23BD22BB70E500494C55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4A2D23BF22BB70E500494C55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4A6C8A8123E84D1D0080886A /* GradientOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientOverlayView.swift; sourceTree = "<group>"; };
 		4A97FA942350ABDE00255C7F /* Pose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pose.swift; sourceTree = "<group>"; };
 		4AA5C4B722BB9CC200277977 /* VideoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
 		4AA5C4B922BBBC2A00277977 /* PoseNet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNet.swift; sourceTree = "<group>"; };
@@ -59,7 +46,6 @@
 		4AE8C3CE23AD2A74005F9953 /* CGImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+Extension.swift"; sourceTree = "<group>"; };
 		4AE8C3D023AD2D3B005F9953 /* PoseNetInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNetInput.swift; sourceTree = "<group>"; };
 		4AE8C3D223AD2D8A005F9953 /* PoseNetOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNetOutput.swift; sourceTree = "<group>"; };
-		57C02DF057C02B4000000001 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BEE6CF152B804A05BF905D20 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,21 +60,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0D8A71B927BDB43FD8F91908 /* LICENSE */ = {
-			isa = PBXGroup;
-			children = (
-				0563E980FDE557646F54ED8A /* LICENSE.txt */,
-			);
-			name = LICENSE;
-			sourceTree = "<group>";
-		};
 		0DCEF2CC241675C200ECEC99 /* Pose */ = {
 			isa = PBXGroup;
 			children = (
-				0DCEF2CD241676C000ECEC99 /* PoseBuilderConfiguration.swift */,
 				0DCEF2C6241666CA00ECEC99 /* PoseBuilder.swift */,
-				0DCEF2C82416701D00ECEC99 /* PoseBuilder+Single.swift */,
-				0DCEF2CA2416709B00ECEC99 /* PoseBuilder+Multiple.swift */,
 				4A97FA942350ABDE00255C7F /* Pose.swift */,
 				4ADD52F722BBCF580008FAAC /* Joint.swift */,
 			);
@@ -106,11 +81,9 @@
 		4A2D23A522BB70E400494C55 = {
 			isa = PBXGroup;
 			children = (
-				57C02DF057C02B4000000001 /* README.md */,
 				4A2D23B022BB70E400494C55 /* PoseFinder */,
 				4A2D23AF22BB70E400494C55 /* Products */,
 				1E2F76EA3781C8213469E3A0 /* Configuration */,
-				0D8A71B927BDB43FD8F91908 /* LICENSE */,
 			);
 			sourceTree = "<group>";
 		};
@@ -170,9 +143,6 @@
 			children = (
 				4A2D23B522BB70E400494C55 /* ViewController.swift */,
 				4AE8C3CA23ACDF1C005F9953 /* PoseImageView.swift */,
-				4A6C8A8123E84D1D0080886A /* GradientOverlayView.swift */,
-				4A2D05CD23BF9A2C00D002ED /* ConfigurationViewController.swift */,
-				4A2D05CF23BF9BBF00D002ED /* PopOverModalViewController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -259,21 +229,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A2D05D023BF9BBF00D002ED /* PopOverModalViewController.swift in Sources */,
-				0DCEF2C92416701D00ECEC99 /* PoseBuilder+Single.swift in Sources */,
-				0DCEF2CB2416709B00ECEC99 /* PoseBuilder+Multiple.swift in Sources */,
 				0DCEF2C7241666CA00ECEC99 /* PoseBuilder.swift in Sources */,
-				4A6C8A8223E84D1D0080886A /* GradientOverlayView.swift in Sources */,
 				4AA5C4B822BB9CC200277977 /* VideoCapture.swift in Sources */,
 				4AE8C3CF23AD2A74005F9953 /* CGImage+Extension.swift in Sources */,
 				4A0FC5BC23190AD6004886B9 /* CGPoint+Extension.swift in Sources */,
-				4A2D05CE23BF9A2C00D002ED /* ConfigurationViewController.swift in Sources */,
 				4A97FA952350ABDE00255C7F /* Pose.swift in Sources */,
 				4A2D23B622BB70E400494C55 /* ViewController.swift in Sources */,
 				4AE8C3D123AD2D3B005F9953 /* PoseNetInput.swift in Sources */,
 				4AA5C4BA22BBBC2A00277977 /* PoseNet.swift in Sources */,
 				4AE8C3D323AD2D8A005F9953 /* PoseNetOutput.swift in Sources */,
-				0DCEF2CE241676C000ECEC99 /* PoseBuilderConfiguration.swift in Sources */,
 				4ADD52F822BBCF580008FAAC /* Joint.swift in Sources */,
 				4ADE4C8C2346C07300FFD895 /* AVCaptureVideoOrientation+Extension.swift in Sources */,
 				4AE8C3CB23ACDF1C005F9953 /* PoseImageView.swift in Sources */,
