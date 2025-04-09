@@ -9,6 +9,9 @@
 import UIKit
 import AVFoundation
 
+import UIKit
+import AVFoundation
+
 class ViewController: UIViewController {
 
     // MARK: - Properties
