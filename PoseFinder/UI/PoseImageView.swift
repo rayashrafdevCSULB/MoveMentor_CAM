@@ -132,30 +132,36 @@ class PoseImageView: UIImageView {
     cgContext.drawPath(using: .fill)
 }
     private func drawLabel(for joint: Joint, in cgContext: CGContext) {
-        guard let image = self.image?.cgImage else { return }
+    guard let image = self.image?.cgImage else { return }
 
-        let imageHeight = CGFloat(image.height)
+    let imageWidth = CGFloat(image.width)
+    let imageHeight = CGFloat(image.height)
 
-        let text = joint.name.rawValue.uppercased()
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 30),
-            .foregroundColor: UIColor.yellow,
-            .backgroundColor: UIColor.black.withAlphaComponent(0.6)
-        ]
+    // Convert normalized joint position to pixel coordinates
+    let x = joint.position.x * imageWidth
+    let y = joint.position.y * imageHeight
 
-        let textSize = text.size(withAttributes: attributes)
-        let flippedY = imageHeight - (joint.position.y + jointRadius + textSize.height + 4)
+    let text = joint.name.rawValue.uppercased()
+    let attributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: 30),
+        .foregroundColor: UIColor.yellow,
+        .backgroundColor: UIColor.black.withAlphaComponent(0.6)
+    ]
 
-        let textOrigin = CGPoint(
-            x: joint.position.x - textSize.width / 2,
-            y: joint.position.y - jointRadius - textSize.height - 2
-        )
+    let textSize = text.size(withAttributes: attributes)
+    let textOrigin = CGPoint(
+        x: x - textSize.width / 2,
+        y: y - jointRadius - textSize.height - 4
+    )
 
-        text.draw(at: textOrigin, withAttributes: attributes)
-        let debugRect = CGRect(x: textOrigin.x, y: textOrigin.y, width: 4, height: 4)
-        cgContext.setFillColor(UIColor.red.cgColor)
-        cgContext.fill(debugRect)
-    }
+    text.draw(at: textOrigin, withAttributes: attributes)
+
+    // Optional debug dot
+    let debugRect = CGRect(x: x - 2, y: y - 2, width: 4, height: 4)
+    cgContext.setFillColor(UIColor.red.cgColor)
+    cgContext.fill(debugRect)
+}
+
 
 
     private func isJointInHighlightedPart(_ jointName: Joint.Name) -> Bool {
