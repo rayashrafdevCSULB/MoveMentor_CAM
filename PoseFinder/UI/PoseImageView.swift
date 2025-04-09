@@ -9,7 +9,7 @@ import UIKit
 @IBDesignable
 class PoseImageView: UIImageView {
 
-    struct JointSegment {
+    struct JointSegment: Hashable{
         let jointA: Joint.Name
         let jointB: Joint.Name
     }
