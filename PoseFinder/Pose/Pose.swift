@@ -6,7 +6,7 @@
  The structure includes utility methods to access joint information and retrieve connections between joints.
 */
 
-iimport CoreGraphics
+import CoreGraphics
 
 struct Pose {
     let joints: [Joint.Name: Joint]
