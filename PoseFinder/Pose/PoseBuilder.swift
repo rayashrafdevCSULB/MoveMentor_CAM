@@ -11,12 +11,12 @@ class PoseBuilder {
 
     /// Estimates a single pose from the provided model output.
     func estimatePose(
-    from heatmap: MLMultiArray,
-    offsets: MLMultiArray,
-    displacementsFwd: MLMultiArray,
-    displacementsBwd: MLMultiArray,
-    outputStride: Int,
-    modelInputSize: CGSize
+        from heatmap: MLMultiArray,
+        offsets: MLMultiArray,
+        displacementsFwd: MLMultiArray,
+        displacementsBwd: MLMultiArray,
+        outputStride: Int,
+        modelInputSize: CGSize
 ) -> Pose? {
     var joints = [Joint.Name: Joint]()
 
