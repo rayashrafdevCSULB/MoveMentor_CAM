@@ -84,9 +84,10 @@ extension ViewController: VideoCaptureDelegate {
               let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
-        poseNet.predict(cgImage)  // ✅ Call without trailing closure
+        poseNet.predict(cgImage) // ✅ NO completion block here!
     }
 }
+
 
 // MARK: - PoseNetDelegate
 
