@@ -6,24 +6,6 @@
  It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
-
-/*
- ViewController.swift
-
- This file implements the main view controller responsible for coordinating the user interface,
- handling the video feed, and processing PoseNet model predictions.
- It manages camera input, runs pose detection, and updates the UI with detected poses.
-*/
-
-
-/*
- ViewController.swift
-
- This file implements the main view controller responsible for coordinating the user interface,
- handling the video feed, and processing PoseNet model predictions.
- It manages camera input, runs pose detection, and updates the UI with detected poses.
-*/
-
 import UIKit
 import AVFoundation
 
@@ -44,7 +26,7 @@ class ViewController: UIViewController {
 
         do {
             poseNet = try PoseNet()
-            poseNet.delegate = self  // ✅ Set delegate to self
+            poseNet.delegate = self  // ✅ Set delegate
         } catch {
             print("❌ Failed to load PoseNet: \(error)")
             return
@@ -71,8 +53,13 @@ class ViewController: UIViewController {
 
     private func setupCamera() {
         videoCapture.delegate = self
-        videoCapture.setUp(sessionPreset: .high)
-        videoCapture.start()
+        videoCapture.setUp(sessionPreset: .high) { success in  // ✅ Add completion block
+            if success {
+                self.videoCapture.start()
+            } else {
+                print("❌ Failed to set up camera session.")
+            }
+        }
     }
 }
 
@@ -84,10 +71,9 @@ extension ViewController: VideoCaptureDelegate {
               let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
-        poseNet.predict(cgImage) // ✅ NO completion block here!
+        poseNet.predict(cgImage)  // ✅ Calls PoseNet (delegate will be triggered after prediction)
     }
 }
-
 
 // MARK: - PoseNetDelegate
 
