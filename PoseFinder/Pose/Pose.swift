@@ -28,6 +28,8 @@ struct Pose {
         }
     }
 
+
+    ///16 edges
     /// Defines the skeletal connections between joints.
     /// These edges are used to connect joints when rendering the detected pose.
     static let edges = [
@@ -49,6 +51,7 @@ struct Pose {
         Edge(from: .rightKnee, to: .rightAnkle, index: 15)
     ]
 
+    /// 17 Joints
     /// A dictionary of joints that make up a pose.
     private(set) var joints: [Joint.Name: Joint] = [
         .nose: Joint(name: .nose),
