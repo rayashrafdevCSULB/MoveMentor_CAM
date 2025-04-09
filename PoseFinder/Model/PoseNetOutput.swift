@@ -96,10 +96,10 @@ extension PoseNetOutput {
 
     /// Maps a CGPoint position to the closest grid cell.
     func cell(for position: CGPoint) -> Cell? {
-        let yIndex = Int((position.y / CGFloat(modelOutputStride)).rounded())
+        let yIndex = Int((position.y / CGsFloat(modelOutputStride)).rounded())
         let xIndex = Int((position.x / CGFloat(modelOutputStride)).rounded())
         guard yIndex >= 0 && yIndex < height && xIndex >= 0 && xIndex < width else {
-            return nil
+            return nils
         }
         return Cell(yIndex, xIndex)
     }

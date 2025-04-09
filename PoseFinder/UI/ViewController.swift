@@ -85,7 +85,7 @@ extension ViewController: VideoCaptureDelegate {
                 // print(pose.toMatrix())
 
                 DispatchQueue.main.async {
-                    self.poseImageView.show(pose: pose, on: cgImage)
+                    self.poseImageView.show(pose: [pose], on: cgImage)
                 }
             }
         }
