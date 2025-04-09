@@ -61,7 +61,7 @@ class PoseNet {
         )
 
         DispatchQueue.main.async {
-            self.delegate?.poseNet(self, didPredict: output)
+            self.delegate?.poseNet(self, didPredict: poseNetOutput)
         }
     }
 }
