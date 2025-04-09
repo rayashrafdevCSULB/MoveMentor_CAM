@@ -62,3 +62,8 @@ extension Joint.Name {
         }
     }
 }
+extension Joint {
+    static var numberOfJoints: Int {
+        return Joint.Name.allCases.count
+    }
+}

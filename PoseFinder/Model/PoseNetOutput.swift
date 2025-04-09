@@ -106,8 +106,8 @@ extension PoseNetOutput {
 
     /// Retrieves the offset for a joint at a specific grid cell.
     func offset(for jointName: Joint.Name, at cell: Cell) -> CGVector {
-        let yOffsetIndex = [jointName.rawValue, cell.yIndex, cell.xIndex]
-        let xOffsetIndex = [jointName.rawValue + Joint.numberOfJoints, cell.yIndex, cell.xIndex]
+        let yOffsetIndex: [Int] = [jointName.index, cell.yIndex, cell.xIndex]
+        let xOffsetIndex: [Int] = [jointName.index + Joint.numberOfJoints, cell.yIndex, cell.xIndex]
         let offsetY: Double = offsets[yOffsetIndex].doubleValue
         let offsetX: Double = offsets[xOffsetIndex].doubleValue
         return CGVector(dx: CGFloat(offsetX), dy: CGFloat(offsetY))
@@ -115,7 +115,7 @@ extension PoseNetOutput {
 
     /// Returns the confidence score for a joint at a specified cell.
     func confidence(for jointName: Joint.Name, at cell: Cell) -> Double {
-        let multiArrayIndex = [jointName.rawValue, cell.yIndex, cell.xIndex]
+        let multiArrayIndex: [Int] = [jointName.rawValue, cell.yIndex, cell.xIndex]
         return heatmap[multiArrayIndex].doubleValue
     }
 
