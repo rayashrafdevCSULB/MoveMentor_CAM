@@ -140,12 +140,17 @@ class PoseImageView: UIImageView {
         ]
 
         let textSize = text.size(withAttributes: attributes)
+        let flippedY = imageHeight - (joint.position.y + jointRadius + textSize.height + 4)
+
         let textOrigin = CGPoint(
             x: joint.position.x - textSize.width / 2,
             y: joint.position.y - jointRadius - textSize.height - 2
         )
 
         text.draw(at: textOrigin, withAttributes: attributes)
+        let debugRect = CGRect(x: textOrigin.x, y: textOrigin.y, width: 4, height: 4)
+        cgContext.setFillColor(UIColor.red.cgColor)
+        cgContext.fill(debugRect)
     }
 
 
