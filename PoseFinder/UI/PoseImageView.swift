@@ -66,7 +66,7 @@ class PoseImageView: UIImageView {
                     draw(circle: joint,
                          highlight: isJointInHighlightedPart(joint.name),
                          in: rendererContext.cgContext)
-                         
+
                     drawLabel(for: joint, in: rendererContext.cgContext)
                 }
             }
@@ -132,10 +132,10 @@ class PoseImageView: UIImageView {
     cgContext.drawPath(using: .fill)
 }
     private func drawLabel(for joint: Joint, in cgContext: CGContext) {
-        let text = joint.name.rawValue
+        let text = joint.name.rawValue.uppercased()
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 10),
-            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 30),
+            .foregroundColor: UIColor.yellow,
             .backgroundColor: UIColor.black.withAlphaComponent(0.6)
         ]
 
