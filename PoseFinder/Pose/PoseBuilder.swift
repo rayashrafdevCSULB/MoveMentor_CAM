@@ -11,34 +11,37 @@ class PoseBuilder {
 
     /// Estimates a single pose from the provided model output.
     func estimatePose(
-        from heatmap: MLMultiArray,
-        offsets: MLMultiArray,
-        displacementsFwd: MLMultiArray,
-        displacementsBwd: MLMultiArray,
-        outputStride: Int
-    ) -> Pose? {
-        var joints = [Joint.Name: Joint]()
+    from heatmap: MLMultiArray,
+    offsets: MLMultiArray,
+    displacementsFwd: MLMultiArray,
+    displacementsBwd: MLMultiArray,
+    outputStride: Int,
+    modelInputSize: CGSize
+) -> Pose? {
+    var joints = [Joint.Name: Joint]()
 
-        for jointIndex in 0..<Joint.numberOfJoints {
-            // Get the most confident cell for this joint
-            let (maxRow, maxCol, confidence) = heatmap.maxLocation(for: jointIndex)
+    for jointIndex in 0..<Joint.numberOfJoints {
+        let (maxRow, maxCol, confidence) = heatmap.maxLocation(for: jointIndex)
+        let cell = PoseNetOutput.Cell(maxRow, maxCol)
 
-            // Create a PoseNet output cell
-            let cell = PoseNetOutput.Cell(maxRow, maxCol)
+        let offsetX = CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol])
+        let offsetY = CGFloat(offsets[jointIndex, maxRow, maxCol])
 
-            // Get the refined joint position using offsets
-            let jointName = Joint.Name.allCases[jointIndex]
-            let rawX = CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol])
-            let rawY = CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol])
-            let normalizedX = rawX / CGFloat(modelInputSize.width)
-            let normalizedY = rawY / CGFloat(modelInputSize.height)
-            let position = CGPoint(x: normalizedX, y: normalizedY)  // 👈 Normalized joint
+        let x = CGFloat(maxCol * outputStride) + offsetX
+        let y = CGFloat(maxRow * outputStride) + offsetY
 
+        // Normalize to [0, 1] for PoseImageView scaling
+        let normalizedX = x / modelInputSize.width
+        let normalizedY = y / modelInputSize.height
 
-            let joint = Joint(name: jointName, position: position, confidence: confidence)
-            joints[jointName] = joint
-        }
+        let position = CGPoint(x: normalizedX, y: normalizedY)
+        let jointName = Joint.Name.allCases[jointIndex]
+        let joint = Joint(name: jointName, position: position, confidence: confidence)
 
-        return Pose(joints: joints)
+        joints[jointName] = joint
     }
+
+    return Pose(joints: joints)
+}
+
 }
