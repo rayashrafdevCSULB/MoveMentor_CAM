@@ -75,7 +75,7 @@ extension ViewController: VideoCaptureDelegate {
               let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
-        poseNet.predict(pixelBuffer: pixelBuffer)
+        poseNet.predict(pixelBuffer)
     }
 }
 
