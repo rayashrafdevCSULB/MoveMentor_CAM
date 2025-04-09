@@ -32,11 +32,11 @@ extension MLMultiArray {
         return (maxRow, maxCol, maxConfidence)
     }
 
-    subscript(offset offset: Int, row: Int, col: Int, channelStride: Int) -> Float {
-        let width = self.shape[2].intValue
-        let height = self.shape[1].intValue
-        let index = offset * height * width + row * width + col
-        return self[index].floatValue
+    subscript(offset: Int, row: Int, col: Int, channelStride: Int) -> Float {
+    let width = self.shape[2].intValue
+    let height = self.shape[1].intValue
+    let index = offset * height * width + row * width + col
+    return self[index].floatValue
     }
 }
 

@@ -9,9 +9,13 @@
 import AVFoundation
 import UIKit
 
+// MARK: - Delegate Protocol
+
 protocol VideoCaptureDelegate: AnyObject {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?)
 }
+
+// MARK: - Camera Manager
 
 class VideoCapture: NSObject {
     weak var delegate: VideoCaptureDelegate?
@@ -54,9 +58,12 @@ class VideoCapture: NSObject {
     }
 }
 
+// MARK: - Frame Output
+
 extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         delegate?.videoCapture(self, didCapturePixelBuffer: pixelBuffer)
     }
 }
+
