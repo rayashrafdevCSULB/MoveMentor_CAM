@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     // MARK: - Properties
 
     var poseImageView: PoseImageView!
-    var poseNet : PoseNet!
+    var poseNet: PoseNet!
     let poseBuilder = PoseBuilder()
     let videoCapture = VideoCapture()
 
@@ -85,7 +85,7 @@ extension ViewController: VideoCaptureDelegate {
                 // print(pose.toMatrix())
 
                 DispatchQueue.main.async {
-                    self.poseImageView.show(pose: [pose], on: cgImage)
+                    self.poseImageView.show(poses: [pose], on: cgImage) // ✅ fixed
                 }
             }
         }
