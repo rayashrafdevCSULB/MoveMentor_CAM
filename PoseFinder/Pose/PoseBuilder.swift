@@ -11,7 +11,7 @@ import CoreGraphics
 import CoreML
 
 final class PoseBuilder {
-
+    
     func estimatePose(
         from heatmap: MLMultiArray,
         offsets: MLMultiArray,
@@ -19,21 +19,9 @@ final class PoseBuilder {
         displacementsBwd: MLMultiArray,
         outputStride: Int
     ) -> Pose? {
-        
-        // Decode pose (only one for now) using built-in logic or simplified from multi-pose
-        // This is a placeholder. Your original multiple-pose logic likely called into PoseBuilder+Single
-        guard let pose = decodeSinglePose(
-            from: heatmap,
-            offsets: offsets,
-            outputStride: outputStride
-        ) else {
-            return nil
-        }
-
-        return pose
+        return decodeSinglePose(from: heatmap, offsets: offsets, outputStride: outputStride)
     }
 
-    // MARK: - Pose Decoding (adapted from PoseBuilder+Single.swift)
     private func decodeSinglePose(
         from heatmap: MLMultiArray,
         offsets: MLMultiArray,
@@ -43,16 +31,16 @@ final class PoseBuilder {
 
         for jointName in Joint.Name.allCases {
             let jointIndex = jointName.index
-            let (maxRow, maxCol, maxConfidence) = heatmap.maxLocation(for: jointIndex)
+            let (row, col, confidence) = heatmap.maxLocation(for: jointIndex)
 
-            let offsetX = offsets[offset: 0, row: maxRow, col: maxCol, channelStride: 2]
-            let offsetY = offsets[offset: 1, row: maxRow, col: maxCol, channelStride: 2]
+            let offsetX = offsets[offset: 0, row: row, col: col, channelStride: 2]
+            let offsetY = offsets[offset: 1, row: row, col: col, channelStride: 2]
 
-            let x = CGFloat(maxCol * outputStride) + CGFloat(offsetX)
-            let y = CGFloat(maxRow * outputStride) + CGFloat(offsetY)
+            let x = CGFloat(col * outputStride) + CGFloat(offsetX)
+            let y = CGFloat(row * outputStride) + CGFloat(offsetY)
 
             let position = CGPoint(x: x, y: y)
-            joints[jointName] = Joint(name: jointName, position: position, confidence: maxConfidence)
+            joints[jointName] = Joint(name: jointName, position: position, confidence: confidence)
         }
 
         return Pose(joints: joints)

@@ -6,72 +6,57 @@
  It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
-import UIKit
 import AVFoundation
+import UIKit
 
-class ViewController: UIViewController {
+protocol VideoCaptureDelegate: AnyObject {
+    func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?)
+}
 
-    // UI to draw pose
-    var poseImageView: PoseImageView!
+class VideoCapture: NSObject {
+    weak var delegate: VideoCaptureDelegate?
 
-    // CoreML Model & Logic
-    let poseNet = PoseNet()
-    let poseBuilder = PoseBuilder()
+    private let captureSession = AVCaptureSession()
+    private let videoOutput = AVCaptureVideoDataOutput()
+    private let videoQueue = DispatchQueue(label: "videoQueue")
 
-    // Camera Feed
-    let videoCapture = VideoCapture()
+    func setUp(sessionPreset: AVCaptureSession.Preset, completion: @escaping (Bool) -> Void) {
+        captureSession.beginConfiguration()
+        captureSession.sessionPreset = sessionPreset
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setupCamera()
-        setupPoseImageView()
-    }
-
-    private func setupCamera() {
-        videoCapture.delegate = self
-        videoCapture.setUp(sessionPreset: .high) { success in
-            if success {
-                self.videoCapture.start()
-            }
+        guard let device = AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: device),
+              captureSession.canAddInput(input) else {
+            completion(false)
+            return
         }
+
+        captureSession.addInput(input)
+
+        if captureSession.canAddOutput(videoOutput) {
+            videoOutput.setSampleBufferDelegate(self, queue: videoQueue)
+            captureSession.addOutput(videoOutput)
+        } else {
+            completion(false)
+            return
+        }
+
+        captureSession.commitConfiguration()
+        completion(true)
     }
 
-    private func setupPoseImageView() {
-        poseImageView = PoseImageView()
-        poseImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(poseImageView)
+    func start() {
+        captureSession.startRunning()
+    }
 
-        NSLayoutConstraint.activate([
-            poseImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            poseImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            poseImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            poseImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+    func stop() {
+        captureSession.stopRunning()
     }
 }
 
-extension ViewController: VideoCaptureDelegate {
-    func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
-        guard let pixelBuffer = pixelBuffer else { return }
-
-        poseNet.predict(pixelBuffer: pixelBuffer) { result in
-            guard let result = result else { return }
-
-            let pose = self.poseBuilder.estimatePose(
-                from: result.heatmap,
-                offsets: result.offsets,
-                displacementsFwd: result.displacementsFwd,
-                displacementsBwd: result.displacementsBwd,
-                outputStride: result.modelOutputStride
-            )
-
-            if let pose = pose,
-               let cgImage = pixelBuffer.toCGImage() {
-                DispatchQueue.main.async {
-                    self.poseImageView.show(pose: pose, on: cgImage)
-                }
-            }
-        }
+extension VideoCapture: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        delegate?.videoCapture(self, didCapturePixelBuffer: pixelBuffer)
     }
 }
