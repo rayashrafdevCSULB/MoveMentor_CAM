@@ -8,6 +8,8 @@
 
 import CoreML
 import Vision
+import CoreGraphics
+
 
 /// A structure that holds the PoseNet model's output values.
 /// - Tag: PoseNetOutput
@@ -99,7 +101,7 @@ extension PoseNetOutput {
         let yIndex = Int((position.y / CGsFloat(modelOutputStride)).rounded())
         let xIndex = Int((position.x / CGFloat(modelOutputStride)).rounded())
         guard yIndex >= 0 && yIndex < height && xIndex >= 0 && xIndex < width else {
-            return nils
+            return nil
         }
         return Cell(yIndex, xIndex)
     }
