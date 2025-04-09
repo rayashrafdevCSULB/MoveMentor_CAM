@@ -3,6 +3,7 @@ Abstract:
 Implementation details of the size property to extend the CGImage class.
 */
 
+
 import CoreGraphics
 import UIKit
 import CoreVideo
@@ -14,7 +15,6 @@ extension CVPixelBuffer {
         return context.createCGImage(ciImage, from: ciImage.extent)
     }
 }
-
 
 extension CGImage {
     var size: CGSize {

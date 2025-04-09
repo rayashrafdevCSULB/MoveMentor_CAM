@@ -6,7 +6,6 @@
  It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
-
 import UIKit
 import AVFoundation
 
@@ -26,7 +25,6 @@ class ViewController: UIViewController {
 
         do {
             poseNet = try PoseNet()
-            poseNet.delegate = self
         } catch {
             print("❌ Failed to load PoseNet: \(error)")
             return
@@ -67,29 +65,22 @@ class ViewController: UIViewController {
 
 extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
-        guard let pixelBuffer = pixelBuffer,
-              let cgImage = pixelBuffer.toCGImage() else { return }
+        guard let pixelBuffer = pixelBuffer else { return }
 
-        // Use the correct PoseNet interface
-        poseNet.predict(cgImage)
-    }
-}
+        poseNet.predict(pixelBuffer.toCGImage()!) { result in
+            let pose = self.poseBuilder.estimatePose(
+                from: result.heatmap,
+                offsets: result.offsets,
+                displacementsFwd: result.displacementsFwd,
+                displacementsBwd: result.displacementsBwd,
+                outputStride: result.modelOutputStride
+            )
 
-// MARK: - PoseNetDelegate
-
-extension ViewController: PoseNetDelegate {
-    func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
-        let pose = poseBuilder.estimatePose(
-            from: predictions.heatmap,
-            offsets: predictions.offsets,
-            displacementsFwd: predictions.forwardDisplacementMap,
-            displacementsBwd: predictions.backwardDisplacementMap,
-            outputStride: predictions.modelOutputStride
-        )
-
-        DispatchQueue.main.async {
-            if let pose = pose {
-                self.poseImageView.show(poses: [pose], on: self.poseImageView.image?.cgImage ?? CGImage())
+            if let pose = pose,
+               let cgImage = pixelBuffer.toCGImage() {
+                DispatchQueue.main.async {
+                    self.poseImageView.show(poses: [pose], on: cgImage)
+                }
             }
         }
     }
