@@ -9,6 +9,8 @@
 
 import CoreML
 import Vision
+import CoreGraphics
+
 
 /// Protocol for PoseNet delegate to handle predictions.
 protocol PoseNetDelegate: AnyObject {
@@ -44,25 +46,24 @@ class PoseNet {
 
     /// Performs pose estimation on the given image.
     /// - Parameter image: The input CGImage to process.
-    func predict(cgImage) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            // Wrap the image in a PoseNetInput object for preprocessing.
-            let input = PoseNetInput(image: image, size: self.modelInputSize)
+    func predict(_ image: CGImage) {
+    DispatchQueue.global(qos: .userInitiated).async {
+        let input = PoseNetInput(image: image, size: self.modelInputSize)
 
-            // Perform inference using the PoseNet Core ML model.
-            guard let prediction = try? self.poseNetMLModel.prediction(from: input) else {
-                return
-            }
+        guard let prediction = try? self.poseNetMLModel.prediction(from: input) else {
+            return
+        }
 
-            // Process the model's output into a structured PoseNetOutput object.
-            let poseNetOutput = PoseNetOutput(prediction: prediction,
-                                              modelInputSize: self.modelInputSize,
-                                              modelOutputStride: self.outputStride)
+        let output = PoseNetOutput(
+            prediction: prediction,
+            modelInputSize: self.modelInputSize,
+            modelOutputStride: self.outputStride
+        )
 
-            // Dispatch the result to the main thread for UI updates.
-            DispatchQueue.main.async {
-                self.delegate?.poseNet(self, didPredict: poseNetOutput)
-            }
+        DispatchQueue.main.async {
+            self.delegate?.poseNet(self, didPredict: output)
         }
     }
+}
+
 }
