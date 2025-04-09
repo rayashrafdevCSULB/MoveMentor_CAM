@@ -52,13 +52,53 @@ class PoseImageView: UIImageView {
             draw(image: frame, in: rendererContext.cgContext)
 
             for pose in poses {
-                // Draw connections
+                let leftShoulder = pose[.leftShoulder]
+                let leftElbow = pose[.leftElbow]
+                let leftWrist = pose[.leftWrist]
+
+                let rightShoulder = pose[.rightShoulder]
+                let rightElbow = pose[.rightElbow]
+                let rightWrist = pose[.rightWrist]
+
+                var curledArmSegments: Set<JointSegment> = []
+
+                // LEFT ARM
+                if leftShoulder.isValid && leftElbow.isValid && leftWrist.isValid {
+                    let leftAngle = angleBetween(
+                        jointA: leftShoulder.position,
+                        jointB: leftElbow.position,
+                        jointC: leftWrist.position
+                    )
+
+                    if leftAngle < 90 {
+                        curledArmSegments.insert(JointSegment(jointA: .leftShoulder, jointB: .leftElbow))
+                        curledArmSegments.insert(JointSegment(jointA: .leftElbow, jointB: .leftWrist))
+                    }
+                }
+
+                // RIGHT ARM
+                if rightShoulder.isValid && rightElbow.isValid && rightWrist.isValid {
+                    let rightAngle = angleBetween(
+                        jointA: rightShoulder.position,
+                        jointB: rightElbow.position,
+                        jointC: rightWrist.position
+                    )
+
+                    if rightAngle < 90 {
+                        curledArmSegments.insert(JointSegment(jointA: .rightShoulder, jointB: .rightElbow))
+                        curledArmSegments.insert(JointSegment(jointA: .rightElbow, jointB: .rightWrist))
+                    }
+                }
+
+                // Draw the res of the edges
                 for segment in PoseImageView.jointSegments {
                     let jointA = pose[segment.jointA]
                     let jointB = pose[segment.jointB]
 
                     guard jointA.isValid, jointB.isValid else { continue }
-                    drawLine(from: jointA, to: jointB, in: rendererContext.cgContext)
+
+                    let isCurled = curledArmSegments.contains(segment) // ✅ Check for highlighted segments
+                    drawLine(from: jointA, to: jointB, in: rendererContext.cgContext, highlight: isCurled)
                 }
 
                 // Draw individual joints
@@ -85,26 +125,20 @@ class PoseImageView: UIImageView {
         cgContext.restoreGState()
     }
 
-    func drawLine(from parentJoint: Joint, to childJoint: Joint, in cgContext: CGContext) {
-    guard let image = self.image?.cgImage else { return }
+    func drawLine(from parentJoint: Joint, to childJoint: Joint, in cgContext: CGContext, highlight: Bool = false) {
+        guard let image = self.image?.cgImage else { return }
 
-    let imageWidth = CGFloat(image.width)
-    let imageHeight = CGFloat(image.height)
+        let imageWidth = CGFloat(image.width)
+        let imageHeight = CGFloat(image.height)
 
-    let start = CGPoint(
-        x: parentJoint.position.x * imageWidth,
-        y: parentJoint.position.y * imageHeight
-    )
-    let end = CGPoint(
-        x: childJoint.position.x * imageWidth,
-        y: childJoint.position.y * imageHeight
-    )
+        let start = CGPoint(x: parentJoint.position.x * imageWidth, y: parentJoint.position.y * imageHeight)
+        let end = CGPoint(x: childJoint.position.x * imageWidth, y: childJoint.position.y * imageHeight)
 
-    cgContext.setStrokeColor(segmentColor.cgColor)
-    cgContext.setLineWidth(segmentLineWidth)
-    cgContext.move(to: start)
-    cgContext.addLine(to: end)
-    cgContext.strokePath()
+        cgContext.setStrokeColor((highlight ? UIColor.red : segmentColor).cgColor)
+        cgContext.setLineWidth(segmentLineWidth)
+        cgContext.move(to: start)
+        cgContext.addLine(to: end)
+        cgContext.strokePath()
 }
 
 
@@ -161,7 +195,21 @@ class PoseImageView: UIImageView {
     cgContext.setFillColor(UIColor.red.cgColor)
     cgContext.fill(debugRect)
 }
+    //MARK: Compute Elbow Angle (Remove)
+    private func angleBetween(jointA: CGPoint, jointB: CGPoint, jointC: CGPoint) -> CGFloat {
+    // Angle at jointB between A and C
+    let ab = CGVector(dx: jointA.x - jointB.x, dy: jointA.y - jointB.y)
+    let cb = CGVector(dx: jointC.x - jointB.x, dy: jointC.y - jointB.y)
 
+    let dot = ab.dx * cb.dx + ab.dy * cb.dy
+    let magAB = sqrt(ab.dx * ab.dx + ab.dy * ab.dy)
+    let magCB = sqrt(cb.dx * cb.dx + cb.dy * cb.dy)
+
+    guard magAB > 0 && magCB > 0 else { return 0 }
+
+    let cosineAngle = dot / (magAB * magCB)
+    return acos(cosineAngle) * 180 / .pi  // Convert to degrees
+}
 
 
     private func isJointInHighlightedPart(_ jointName: Joint.Name) -> Bool {
