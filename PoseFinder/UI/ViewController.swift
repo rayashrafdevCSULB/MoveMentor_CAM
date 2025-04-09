@@ -80,10 +80,6 @@ extension ViewController: VideoCaptureDelegate {
 
             if let pose = pose,
                let cgImage = pixelBuffer.toCGImage() {
-
-                // (Optional) Debug: print joint matrix
-                // print(pose.toMatrix())
-
                 DispatchQueue.main.async {
                     self.poseImageView.show(poses: [pose], on: cgImage)
                 }
