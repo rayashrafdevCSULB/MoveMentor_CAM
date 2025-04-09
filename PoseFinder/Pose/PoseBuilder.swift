@@ -1,17 +1,15 @@
 /*
  PoseBuilder.swift
- 
- This file defines the PoseBuilder structure, responsible for analyzing PoseNet model outputs.
- It processes predictions to construct single or multiple poses, transforming detected joint positions
- from the model’s coordinate space back to the original image dimensions.
+
+ This file implements logic for estimating a human pose from PoseNet output.
 */
 
-import Foundation
 import CoreGraphics
 import CoreML
 
-final class PoseBuilder {
-    
+class PoseBuilder {
+
+    /// Estimates a single pose from the provided model output.
     func estimatePose(
         from heatmap: MLMultiArray,
         offsets: MLMultiArray,
@@ -19,29 +17,24 @@ final class PoseBuilder {
         displacementsBwd: MLMultiArray,
         outputStride: Int
     ) -> Pose? {
-        return decodeSinglePose(from: heatmap, offsets: offsets, outputStride: outputStride)
-    }
+        var joints = [Joint.Name: Joint]()
 
-    private func decodeSinglePose(
-        from heatmap: MLMultiArray,
-        offsets: MLMultiArray,
-        outputStride: Int
-    ) -> Pose? {
-        var joints: [Joint.Name: Joint] = [:]
+        for jointIndex in 0..<Joint.numberOfJoints {
+            // Get the most confident cell for this joint
+            let (maxRow, maxCol, confidence) = heatmap.maxLocation(for: jointIndex)
 
-        for jointName in Joint.Name.allCases {
-            let jointIndex = jointName.index
-            let (row, col, confidence) = heatmap.maxLocation(for: jointIndex)
+            // Create a PoseNet output cell
+            let cell = PoseNetOutput.Cell(maxRow, maxCol)
 
-            let offsetX = offsets[0, maxRow, maxCol, 2]
-            let offsetY = offsets[1, maxRow, maxCol, 2]
+            // Get the refined joint position using offsets
+            let jointName = Joint.Name.allCases[jointIndex]
+            let position = CGPoint(
+                x: CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol, 0]),
+                y: CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol, 0])
+            )
 
-
-            let x = CGFloat(col * outputStride) + CGFloat(offsetX)
-            let y = CGFloat(row * outputStride) + CGFloat(offsetY)
-
-            let position = CGPoint(x: x, y: y)
-            joints[jointName] = Joint(name: jointName, position: position, confidence: confidence)
+            let joint = Joint(name: jointName, position: position, confidence: confidence)
+            joints[jointName] = joint
         }
 
         return Pose(joints: joints)
