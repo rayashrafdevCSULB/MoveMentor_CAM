@@ -22,6 +22,14 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        do {
+            poseNet = try PoseNet()
+        } catch {
+            print("❌ Failed to load PoseNet: \(error)")
+            return
+        }
+
         setupPoseImageView()
         setupCamera()
     }
