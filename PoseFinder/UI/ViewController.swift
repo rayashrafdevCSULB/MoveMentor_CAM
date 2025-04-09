@@ -15,20 +15,17 @@
  It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
+
 import UIKit
 import AVFoundation
 
 class ViewController: UIViewController {
-
-    // MARK: - Properties
 
     var poseImageView: PoseImageView!
     var poseNet: PoseNet!
     let poseBuilder = PoseBuilder()
     let videoCapture = VideoCapture()
     var lastFrame: CGImage?
-
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,8 +41,6 @@ class ViewController: UIViewController {
         setupPoseImageView()
         setupCamera()
     }
-
-    // MARK: - Setup Methods
 
     private func setupPoseImageView() {
         poseImageView = PoseImageView()
@@ -89,8 +84,7 @@ extension ViewController: PoseNetDelegate {
             displacementsFwd: predictions.forwardDisplacementMap,
             displacementsBwd: predictions.backwardDisplacementMap,
             outputStride: predictions.modelOutputStride
-        ),
-        let frame = self.lastFrame else {
+        ), let frame = self.lastFrame else {
             return
         }
 
