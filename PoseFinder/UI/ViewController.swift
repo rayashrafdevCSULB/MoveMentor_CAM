@@ -83,13 +83,14 @@ extension ViewController: VideoCaptureDelegate {
 extension ViewController: PoseNetDelegate {
     func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
         guard let pose = self.poseBuilder.estimatePose(
-    from: predictions.heatmap,
-    offsets: predictions.offsets,
-    displacementsFwd: predictions.forwardDisplacementMap,
-    displacementsBwd: predictions.backwardDisplacementMap,
-    outputStride: predictions.modelOutputStride,
-    modelInputSize: predictions.modelInputSize // ✅ Add this
+            from: predictions.heatmap,
+            offsets: predictions.offsets,
+            displacementsFwd: predictions.forwardDisplacementMap,
+            displacementsBwd: predictions.backwardDisplacementMap,
+            outputStride: predictions.modelOutputStride,
+            modelInputSize: predictions.modelInputSize // ✅ THIS IS KEY
 )
+
     , let frame = self.lastFrame else {
             return
         }
