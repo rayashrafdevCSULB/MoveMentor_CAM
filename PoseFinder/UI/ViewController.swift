@@ -9,9 +9,6 @@
 import UIKit
 import AVFoundation
 
-import UIKit
-import AVFoundation
-
 class ViewController: UIViewController {
 
     // MARK: - Properties
@@ -70,7 +67,7 @@ extension ViewController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCapturePixelBuffer pixelBuffer: CVPixelBuffer?) {
         guard let pixelBuffer = pixelBuffer else { return }
 
-        poseNet.predict(pixelBuffer: pixelBuffer) { result in
+        poseNet.predict(pixelBuffer: pixelBuffer, completion: { result in
             guard let result = result else { return }
 
             let pose = self.poseBuilder.estimatePose(
@@ -87,6 +84,6 @@ extension ViewController: VideoCaptureDelegate {
                     self.poseImageView.show(poses: [pose], on: cgImage)
                 }
             }
-        }
+        })
     }
 }
