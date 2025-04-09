@@ -15,6 +15,8 @@
  It manages camera input, runs pose detection, and updates the UI with detected poses.
 */
 
+
+
 import UIKit
 import AVFoundation
 
@@ -75,7 +77,7 @@ extension ViewController: VideoCaptureDelegate {
               let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
-        poseNet.predict(pixelBuffer)
+        poseNet.predict(cgImage)
     }
 }
 
