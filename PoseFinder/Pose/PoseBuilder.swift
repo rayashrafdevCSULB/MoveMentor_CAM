@@ -28,10 +28,12 @@ class PoseBuilder {
 
             // Get the refined joint position using offsets
             let jointName = Joint.Name.allCases[jointIndex]
-            let position = CGPoint(
-                x: CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol]),
-                y: CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol])
-            )
+            let rawX = CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol])
+            let rawY = CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol])
+            let normalizedX = rawX / CGFloat(modelInputSize.width)
+            let normalizedY = rawY / CGFloat(modelInputSize.height)
+            let position = CGPoint(x: normalizedX, y: normalizedY)  // 👈 Normalized joint
+
 
             let joint = Joint(name: jointName, position: position, confidence: confidence)
             joints[jointName] = joint

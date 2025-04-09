@@ -1,5 +1,4 @@
 /*
- See the LICENSE.txt file for this sample’s licensing information.
 
  Abstract:
  Implementation details of a view that visualizes the detected poses.
@@ -85,24 +84,52 @@ class PoseImageView: UIImageView {
     }
 
     func drawLine(from parentJoint: Joint, to childJoint: Joint, in cgContext: CGContext) {
-        cgContext.setStrokeColor(segmentColor.cgColor)
-        cgContext.setLineWidth(segmentLineWidth)
-        cgContext.move(to: parentJoint.position)
-        cgContext.addLine(to: childJoint.position)
-        cgContext.strokePath()
-    }
+    guard let image = self.image?.cgImage else { return }
+
+    let imageWidth = CGFloat(image.width)
+    let imageHeight = CGFloat(image.height)
+
+    let start = CGPoint(
+        x: parentJoint.position.x * imageWidth,
+        y: parentJoint.position.y * imageHeight
+    )
+    let end = CGPoint(
+        x: childJoint.position.x * imageWidth,
+        y: childJoint.position.y * imageHeight
+    )
+
+    cgContext.setStrokeColor(segmentColor.cgColor)
+    cgContext.setLineWidth(segmentLineWidth)
+    cgContext.move(to: start)
+    cgContext.addLine(to: end)
+    cgContext.strokePath()
+}
+
 
     private func draw(circle joint: Joint, highlight: Bool = false, in cgContext: CGContext) {
-        let color = highlight ? UIColor.red.cgColor : jointColor.cgColor
-        cgContext.setFillColor(color)
+    guard let image = self.image?.cgImage else { return }
 
-        let rectangle = CGRect(x: joint.position.x - jointRadius,
-                               y: joint.position.y - jointRadius,
-                               width: jointRadius * 2,
-                               height: jointRadius * 2)
-        cgContext.addEllipse(in: rectangle)
-        cgContext.drawPath(using: .fill)
-    }
+    let imageWidth = CGFloat(image.width)
+    let imageHeight = CGFloat(image.height)
+
+    let position = CGPoint(
+        x: joint.position.x * imageWidth,
+        y: joint.position.y * imageHeight
+    )
+
+    let color = highlight ? UIColor.red.cgColor : jointColor.cgColor
+    cgContext.setFillColor(color)
+
+    let rectangle = CGRect(
+        x: position.x - jointRadius,
+        y: position.y - jointRadius,
+        width: jointRadius * 2,
+        height: jointRadius * 2
+    )
+    cgContext.addEllipse(in: rectangle)
+    cgContext.drawPath(using: .fill)
+}
+
 
     private func isJointInHighlightedPart(_ jointName: Joint.Name) -> Bool {
         guard let part = highlightedBodyPart else { return false }
