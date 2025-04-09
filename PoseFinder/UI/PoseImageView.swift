@@ -66,6 +66,8 @@ class PoseImageView: UIImageView {
                     draw(circle: joint,
                          highlight: isJointInHighlightedPart(joint.name),
                          in: rendererContext.cgContext)
+                         
+                    drawLabel(for: joint, in: rendererContext.cgContext)
                 }
             }
         }
@@ -129,6 +131,22 @@ class PoseImageView: UIImageView {
     cgContext.addEllipse(in: rectangle)
     cgContext.drawPath(using: .fill)
 }
+    private func drawLabel(for joint: Joint, in cgContext: CGContext) {
+        let text = joint.name.rawValue
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10),
+            .foregroundColor: UIColor.white,
+            .backgroundColor: UIColor.black.withAlphaComponent(0.6)
+        ]
+
+        let textSize = text.size(withAttributes: attributes)
+        let textOrigin = CGPoint(
+            x: joint.position.x - textSize.width / 2,
+            y: joint.position.y - jointRadius - textSize.height - 2
+        )
+
+        text.draw(at: textOrigin, withAttributes: attributes)
+    }
 
 
     private func isJointInHighlightedPart(_ jointName: Joint.Name) -> Bool {
