@@ -1,6 +1,6 @@
 /*
-Abstract:
-The implementation details of some mathematical operations that extend the CGPoint structure.
+ Abstract:
+ The implementation details of some mathematical operations that extend the CGPoint structure.
 */
 
 import CoreGraphics

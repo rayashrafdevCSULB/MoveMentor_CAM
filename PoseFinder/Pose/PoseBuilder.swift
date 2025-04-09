@@ -29,8 +29,8 @@ class PoseBuilder {
             // Get the refined joint position using offsets
             let jointName = Joint.Name.allCases[jointIndex]
             let position = CGPoint(
-                x: CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol, 0]),
-                y: CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol, 0])
+                x: CGFloat(maxCol * outputStride) + CGFloat(offsets[jointIndex + Joint.numberOfJoints, maxRow, maxCol]),
+                y: CGFloat(maxRow * outputStride) + CGFloat(offsets[jointIndex, maxRow, maxCol])
             )
 
             let joint = Joint(name: jointName, position: position, confidence: confidence)
