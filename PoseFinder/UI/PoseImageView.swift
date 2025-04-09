@@ -132,6 +132,10 @@ class PoseImageView: UIImageView {
     cgContext.drawPath(using: .fill)
 }
     private func drawLabel(for joint: Joint, in cgContext: CGContext) {
+        guard let image = self.image?.cgImage else { return }
+
+        let imageHeight = CGFloat(image.height)
+
         let text = joint.name.rawValue.uppercased()
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 30),
