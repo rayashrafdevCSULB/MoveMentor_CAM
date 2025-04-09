@@ -80,3 +80,12 @@ extension CGPoint {
         return CGPoint(x: lhs.x * rhs.width, y: lhs.y * rhs.height)
     }
 }
+
+extension CVPixelBuffer {
+    func toCGImage() -> CGImage? {
+        let ciImage = CIImage(cvPixelBuffer: self)
+        let context = CIContext()
+        return context.createCGImage(ciImage, from: ciImage.extent)
+    }
+}
+
