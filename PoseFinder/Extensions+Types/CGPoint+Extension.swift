@@ -6,6 +6,40 @@ The implementation details of some mathematical operations that extend the CGPoi
 */
 
 import CoreGraphics
+import CoreML
+
+extension MLMultiArray {
+    func maxLocation(for jointIndex: Int) -> (row: Int, col: Int, confidence: Float) {
+        let height = self.shape[1].intValue
+        let width = self.shape[2].intValue
+
+        var maxConfidence: Float = 0
+        var maxRow = 0
+        var maxCol = 0
+
+        for row in 0..<height {
+            for col in 0..<width {
+                let index = jointIndex * height * width + row * width + col
+                let confidence = self[index].floatValue
+                if confidence > maxConfidence {
+                    maxConfidence = confidence
+                    maxRow = row
+                    maxCol = col
+                }
+            }
+        }
+
+        return (maxRow, maxCol, maxConfidence)
+    }
+
+    subscript(offset offset: Int, row: Int, col: Int, channelStride: Int) -> Float {
+        let width = self.shape[2].intValue
+        let height = self.shape[1].intValue
+        let index = offset * height * width + row * width + col
+        return self[index].floatValue
+    }
+}
+
 
 extension CGPoint {
     init(_ cell: PoseNetOutput.Cell) {

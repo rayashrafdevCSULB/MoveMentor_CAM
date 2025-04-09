@@ -8,10 +8,8 @@
 
 import CoreGraphics
 
-/// Represents a detected body joint in PoseNet.
-class Joint {
-    /// Enum representing all possible body joints PoseNet can detect.
-    enum Name: Int, CaseIterable {
+struct Joint {
+    enum Name: String, CaseIterable {
         case nose
         case leftEye
         case rightEye
@@ -31,50 +29,36 @@ class Joint {
         case rightAnkle
     }
 
-    /// The total number of joints defined in the model.
-    static var numberOfJoints: Int {
-        return Name.allCases.count
-    }
-    
-
-    /// The unique identifier for the joint.
     let name: Name
+    let position: CGPoint
+    let confidence: Float
 
-    /// The position of the joint in image space.
-    /// Initially relative to the model’s input size and later mapped to the original image.
-    var position: CGPoint
-    
+    var isValid: Bool {
+        return confidence > 0.1
+    }
+}
 
-    /// The joint’s location in the PoseNet model’s output grid.
-    var cell: PoseNetOutput.Cell
-
-    /// Confidence score indicating the model’s certainty of joint detection.
-    var confidence: Double
-
-    /// Indicates whether the joint meets the confidence threshold.
-    var isValid: Bool
-
-    var previousPosition: CGPoint?
-    
-    func motionMagnitude() -> CGFloat {
-        guard let prev = previousPosition else { return 0 }
-        return hypot(position.x - prev.x, position.y - prev.y)
-}    /// Initializes a new joint with the provided properties.
-    /// - Parameters:
-    ///   - name: The joint’s name.
-    ///   - cell: The corresponding cell location in the output grid.
-    ///   - position: The joint’s position in image space.
-    ///   - confidence: The confidence score of the detection.
-    ///   - isValid: Whether the joint is valid based on confidence thresholds.
-    init(name: Name,
-         cell: PoseNetOutput.Cell = .zero,
-         position: CGPoint = .zero,
-         confidence: Double = 0,
-         isValid: Bool = false) {
-        self.name = name
-        self.cell = cell
-        self.position = position
-        self.confidence = confidence
-        self.isValid = isValid
+// MARK: - Helper for PoseBuilder: Convert Joint.Name to Index
+extension Joint.Name {
+    var index: Int {
+        switch self {
+        case .nose: return 0
+        case .leftEye: return 1
+        case .rightEye: return 2
+        case .leftEar: return 3
+        case .rightEar: return 4
+        case .leftShoulder: return 5
+        case .rightShoulder: return 6
+        case .leftElbow: return 7
+        case .rightElbow: return 8
+        case .leftWrist: return 9
+        case .rightWrist: return 10
+        case .leftHip: return 11
+        case .rightHip: return 12
+        case .leftKnee: return 13
+        case .rightKnee: return 14
+        case .leftAnkle: return 15
+        case .rightAnkle: return 16
+        }
     }
 }
