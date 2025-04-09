@@ -33,8 +33,9 @@ final class PoseBuilder {
             let jointIndex = jointName.index
             let (row, col, confidence) = heatmap.maxLocation(for: jointIndex)
 
-            let offsetX = offsets[offset: 0, row: row, col: col, channelStride: 2]
-            let offsetY = offsets[offset: 1, row: row, col: col, channelStride: 2]
+            let offsetX = offsets[0, maxRow, maxCol, 2]
+            let offsetY = offsets[1, maxRow, maxCol, 2]
+
 
             let x = CGFloat(col * outputStride) + CGFloat(offsetX)
             let y = CGFloat(row * outputStride) + CGFloat(offsetY)
