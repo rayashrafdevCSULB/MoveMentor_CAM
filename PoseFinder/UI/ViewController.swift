@@ -16,7 +16,6 @@
 */
 
 
-
 import UIKit
 import AVFoundation
 
@@ -37,7 +36,6 @@ class ViewController: UIViewController {
 
         do {
             poseNet = try PoseNet()
-            poseNet.delegate = self
         } catch {
             print("❌ Failed to load PoseNet: \(error)")
             return
@@ -77,26 +75,23 @@ extension ViewController: VideoCaptureDelegate {
               let cgImage = pixelBuffer.toCGImage() else { return }
 
         self.lastFrame = cgImage
-        poseNet.predict(cgImage)
-    }
-}
 
-// MARK: - PoseNetDelegate
+        poseNet.predict(cgImage) { prediction in
+            guard let result = prediction,
+                  let pose = self.poseBuilder.estimatePose(
+                      from: result.heatmap,
+                      offsets: result.offsets,
+                      displacementsFwd: result.forwardDisplacementMap,
+                      displacementsBwd: result.backwardDisplacementMap,
+                      outputStride: result.modelOutputStride
+                  ),
+                  let frame = self.lastFrame else {
+                return
+            }
 
-extension ViewController: PoseNetDelegate {
-    func poseNet(_ poseNet: PoseNet, didPredict predictions: PoseNetOutput) {
-        guard let pose = self.poseBuilder.estimatePose(
-            from: predictions.heatmap,
-            offsets: predictions.offsets,
-            displacementsFwd: predictions.forwardDisplacementMap,
-            displacementsBwd: predictions.backwardDisplacementMap,
-            outputStride: predictions.modelOutputStride
-        ), let frame = self.lastFrame else {
-            return
-        }
-
-        DispatchQueue.main.async {
-            self.poseImageView.show(poses: [pose], on: frame)
+            DispatchQueue.main.async {
+                self.poseImageView.show(poses: [pose], on: frame)
+            }
         }
     }
 }
