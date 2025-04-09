@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     // MARK: - Properties
 
     var poseImageView: PoseImageView!
-    let poseNet = PoseNet()
+    var poseNet : PoseNet!
     let poseBuilder = PoseBuilder()
     let videoCapture = VideoCapture()
 
