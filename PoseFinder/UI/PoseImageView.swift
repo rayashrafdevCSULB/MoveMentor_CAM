@@ -54,43 +54,38 @@ class PoseImageView: UIImageView {
     /// - parameters:
     ///     - poses: An array of detected poses.
     ///     - frame: The image used to detect the poses and used as the background for the returned image.
-    func show(poses: [Pose], on frame: CGImage) {
+    func show(poses: Pose?, on frame: CGImage) {
         let dstImageSize = CGSize(width: frame.width, height: frame.height)
-        let dstImageFormat = UIGraphicsImageRendererFormat()
+let dstImageFormat = UIGraphicsImageRendererFormat()
+dstImageFormat.scale = 1
 
-        dstImageFormat.scale = 1
-        let renderer = UIGraphicsImageRenderer(size: dstImageSize,
-                                               format: dstImageFormat)
+let renderer = UIGraphicsImageRenderer(size: dstImageSize, format: dstImageFormat)
 
-        let dstImage = renderer.image { rendererContext in
-            // Draw the current frame as the background for the new image.
-            draw(image: frame, in: rendererContext.cgContext)
+let dstImage = renderer.image { rendererContext in
+    draw(image: frame, in: rendererContext.cgContext)
 
-            for pose in poses {
-                // Draw the segment lines.
-                for segment in PoseImageView.jointSegments {
-                    let jointA = pose[segment.jointA]
-                    let jointB = pose[segment.jointB]
+    guard let pose = pose else { return }
 
-                    guard jointA.isValid, jointB.isValid else {
-                        continue
-                    }
+    // Draw segment lines
+    for segment in PoseImageView.jointSegments {
+        let jointA = pose[segment.jointA]
+        let jointB = pose[segment.jointB]
 
-                    drawLine(from: jointA,
-                             to: jointB,
-                             in: rendererContext.cgContext)
-                }
+        guard jointA.isValid, jointB.isValid else { continue }
 
-                // Draw the joints as circles above the segment lines.
-                for joint in pose.joints.values.filter({ $0.isValid }) {
-                    draw(circle: joint,
-                         highlight: isJointInHighlightedPart(joint.name),
-                         in: rendererContext.cgContext)
-                }
-            }
-        }
+        drawLine(from: jointA, to: jointB, in: rendererContext.cgContext)
+    }
 
-        image = dstImage
+    // Draw joints
+    for joint in pose.joints.values.filter({ $0.isValid }) {
+        draw(circle: joint,
+             highlight: isJointInHighlightedPart(joint.name),
+             in: rendererContext.cgContext)
+    }
+}
+
+image = dstImage
+
     }
 
     /// Vertically flips and draws the given image.

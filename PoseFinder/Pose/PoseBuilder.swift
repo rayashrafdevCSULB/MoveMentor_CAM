@@ -6,33 +6,55 @@
  from the model’s coordinate space back to the original image dimensions.
 */
 
+iimport Foundation
 import CoreGraphics
+import CoreML
 
-/// Processes PoseNet model outputs to construct pose estimations.
-struct PoseBuilder {
-    /// The output predictions from the PoseNet model.
-    /// These predictions are analyzed to extract joint positions and confidence scores.
-    let output: PoseNetOutput
+final class PoseBuilder {
 
-    /// A transformation matrix used to map detected joint positions
-    /// from the model's input image space back to the original image size.
-    let modelToInputTransformation: CGAffineTransform
+    func estimatePose(
+        from heatmap: MLMultiArray,
+        offsets: MLMultiArray,
+        displacementsFwd: MLMultiArray,
+        displacementsBwd: MLMultiArray,
+        outputStride: Int
+    ) -> Pose? {
+        
+        // Decode pose (only one for now) using built-in logic or simplified from multi-pose
+        // This is a placeholder. Your original multiple-pose logic likely called into PoseBuilder+Single
+        guard let pose = decodeSinglePose(
+            from: heatmap,
+            offsets: offsets,
+            outputStride: outputStride
+        ) else {
+            return nil
+        }
 
-    /// Configuration parameters used to fine-tune pose detection algorithms.
-    var configuration: PoseBuilderConfiguration
+        return pose
+    }
 
-    /// Initializes a PoseBuilder with the given model output, configuration, and input image.
-    /// - Parameters:
-    ///   - output: The output data from PoseNet.
-    ///   - configuration: Parameters controlling pose detection thresholds.
-    ///   - inputImage: The original image being processed.
-    init(output: PoseNetOutput, configuration: PoseBuilderConfiguration, inputImage: CGImage) {
-        self.output = output
-        self.configuration = configuration
+    // MARK: - Pose Decoding (adapted from PoseBuilder+Single.swift)
+    private func decodeSinglePose(
+        from heatmap: MLMultiArray,
+        offsets: MLMultiArray,
+        outputStride: Int
+    ) -> Pose? {
+        var joints: [Joint.Name: Joint] = [:]
 
-        // Create a transformation matrix to convert joint positions
-        // from the model's input space back to the original input image size.
-        modelToInputTransformation = CGAffineTransform(scaleX: inputImage.size.width / output.modelInputSize.width,
-                                                       y: inputImage.size.height / output.modelInputSize.height)
+        for jointName in Joint.Name.allCases {
+            let jointIndex = jointName.index
+            let (maxRow, maxCol, maxConfidence) = heatmap.maxLocation(for: jointIndex)
+
+            let offsetX = offsets[offset: 0, row: maxRow, col: maxCol, channelStride: 2]
+            let offsetY = offsets[offset: 1, row: maxRow, col: maxCol, channelStride: 2]
+
+            let x = CGFloat(maxCol * outputStride) + CGFloat(offsetX)
+            let y = CGFloat(maxRow * outputStride) + CGFloat(offsetY)
+
+            let position = CGPoint(x: x, y: y)
+            joints[jointName] = Joint(name: jointName, position: position, confidence: maxConfidence)
+        }
+
+        return Pose(joints: joints)
     }
 }
