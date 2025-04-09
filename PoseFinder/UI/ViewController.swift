@@ -86,10 +86,11 @@ extension ViewController: PoseNetDelegate {
         guard let pose = self.poseBuilder.estimatePose(
             from: predictions.heatmap,
             offsets: predictions.offsets,
-            displacementsFwd: predictions.displacementsFwd,
-            displacementsBwd: predictions.displacementsBwd,
+            displacementsFwd: predictions.forwardDisplacementMap,
+            displacementsBwd: predictions.backwardDisplacementMap,
             outputStride: predictions.modelOutputStride
-        ), let frame = self.lastFrame else {
+        ),
+        let frame = self.lastFrame else {
             return
         }
 

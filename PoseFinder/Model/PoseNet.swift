@@ -44,7 +44,7 @@ class PoseNet {
 
     /// Performs pose estimation on the given image.
     /// - Parameter image: The input CGImage to process.
-    func predict(_ image: CGImage) {
+    func predict(cgImage) {
         DispatchQueue.global(qos: .userInitiated).async {
             // Wrap the image in a PoseNetInput object for preprocessing.
             let input = PoseNetInput(image: image, size: self.modelInputSize)
